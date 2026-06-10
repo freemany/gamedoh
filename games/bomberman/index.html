@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bomberman</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: #0d0d1a;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 12px 0 24px;
+        overflow-y: auto;
+      }
+      canvas {
+        display: block;
+        border: 2px solid #ff9800;
+        cursor: pointer;
+      }
+      #loading {
+        color: #ff9800;
+        font-family: monospace;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading">Loading...</div>
+    <canvas id="gameCanvas" style="display: none"></canvas>
+    <script type="module" src="./main.js"></script>
+    <audio id="overAudio" src="https://jskidz.au/audio/game-over.wav"></audio>
+    <audio id="winAudio" src="https://jskidz.au/audio/winning-chimes.wav"></audio>
+  </body>
+</html>

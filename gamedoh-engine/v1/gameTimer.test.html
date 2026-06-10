@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GameTimer.js Unit Tests</title>
+    <style>
+      body { font-family: monospace; background: #1a1a2e; color: #ccc; padding: 20px; }
+      h2 { color: #f5a623; }
+    </style>
+  </head>
+  <body>
+    <h2>GameTimer.js Unit Tests</h2>
+    <p>Open DevTools console to see results.</p>
+
+    <script type="module">
+      import { test, deepEqual } from './testLibs.js';
+      import GameTimer from './GameTimer.js';
+
+      // ── Helpers ────────────────────────────────────────────────
+
+      const HEARTBEAT = 100;               // ms per tick
+      const TPX = 1000 / HEARTBEAT;        // ticks per second = 10
+
+      // Simulate N game loop ticks synchronously
+      const tick = (timer, n) => { for (let i = 0; i < n; i++) timer.update(); };
+
+      const makeTimer = (seconds, onTick = () => {}, onExpire = () => {}) =>
+        new GameTimer(seconds, HEARTBEAT, onTick, onExpire);
+
+      // ── start() ────────────────────────────────────────────────
+
+      test([
+        { data: 5,  expected: 5,  msg: 'start() calls onTick with initial seconds (5)' },
+        { data: 10, expected: 10, msg: 'start() calls onTick with initial seconds (10)' },
+      ], (seconds, expected) => {
+        let received;
+        const t = makeTimer(seconds, (r) => { received = r; });
+        t.start();
+        return received === expected;
+      });
+
+      test([
+        { data: {}, expected: false, msg: 'timer does not fire before start()' },
+      ], (_, expected) => {
+        let fired = false;
+        const t = makeTimer(3, () => { fired = true; });
+        tick(t, TPX * 5);
+        return fired === expected;
+      });
+
+      // ── update() — onTick sequence ─────────────────────────────
+
+      test([
+        { data: 3, expected: [3, 2, 1, 0], msg: 'onTick fires 3→2→1→0 for 3s timer' },
+        { data: 1, expected: [1, 0],        msg: 'onTick fires 1→0 for 1s timer' },
+      ], (seconds, expected) => {
+        const received = [];
+        const t = makeTimer(seconds, (r) => received.push(r));
+        t.start();
+        tick(t, seconds * TPX);
+        return deepEqual(received, expected);
+      });
+
+      // ── onExpire ───────────────────────────────────────────────
+
+      test([
+        { data: 1, expected: true, msg: 'onExpire fires after 1s' },
+        { data: 3, expected: true, msg: 'onExpire fires after 3s' },
+      ], (seconds, expected) => {
+        let expired = false;
+        const t = makeTimer(seconds, () => {}, () => { expired = true; });
+        t.start();
+        tick(t, seconds * TPX);
+        return expired === expected;
+      });
+
+      test([
+        { data: 3, expected: false, msg: 'onExpire does not fire before countdown ends' },
+      ], (seconds, expected) => {
+        let expired = false;
+        const t = makeTimer(seconds, () => {}, () => { expired = true; });
+        t.start();
+        tick(t, (seconds - 1) * TPX); // one second short
+        return expired === expected;
+      });
+
+      // ── pause() ────────────────────────────────────────────────
+
+      test([
+        { data: 2, expected: 3, msg: 'pause() stops countdown — remaining stays at 3 after 2 more seconds' },
+      ], (extraSeconds, expected) => {
+        let remaining = 5;
+        const t = makeTimer(5, (r) => { remaining = r; });
+        t.start();
+        tick(t, 2 * TPX);   // 2s → remaining = 3
+        t.pause();
+        tick(t, extraSeconds * TPX); // should not advance
+        return remaining === expected;
+      });
+
+      test([
+        { data: {}, expected: false, msg: 'onExpire does not fire after pause' },
+      ], (_, expected) => {
+        let expired = false;
+        const t = makeTimer(3, () => {}, () => { expired = true; });
+        t.start();
+        tick(t, 1 * TPX);
+        t.pause();
+        tick(t, 10 * TPX); // way past end — should not expire
+        return expired === expected;
+      });
+
+      // ── cancel() ───────────────────────────────────────────────
+
+      test([
+        { data: {}, expected: 0, msg: 'cancel() sets seconds to 0' },
+      ], (_, expected) => {
+        const t = makeTimer(5);
+        t.start();
+        tick(t, 2 * TPX);
+        t.cancel();
+        return t.seconds === expected;
+      });
+
+      test([
+        { data: {}, expected: false, msg: 'cancel() prevents onExpire from firing' },
+      ], (_, expected) => {
+        let expired = false;
+        const t = makeTimer(3, () => {}, () => { expired = true; });
+        t.start();
+        tick(t, 1 * TPX);
+        t.cancel();
+        tick(t, 10 * TPX);
+        return expired === expected;
+      });
+
+      // ── restart() ──────────────────────────────────────────────
+
+      test([
+        { data: 5, expected: 5, msg: 'restart() resets seconds to initSec' },
+      ], (seconds, expected) => {
+        const t = makeTimer(seconds);
+        t.start();
+        tick(t, 3 * TPX);  // advance 3s
+        t.restart();
+        return t.seconds === expected;
+      });
+
+      test([
+        { data: 5, expected: 2, msg: 'restart() timer counts down again correctly' },
+      ], (seconds, expected) => {
+        let remaining = seconds;
+        const t = makeTimer(seconds, (r) => { remaining = r; });
+        t.start();
+        tick(t, seconds * TPX);  // run to end
+        t.restart();
+        tick(t, 3 * TPX);        // 3s into new run
+        return remaining === expected;
+      });
+    </script>
+  </body>
+</html>

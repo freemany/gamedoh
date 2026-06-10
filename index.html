@@ -1,0 +1,983 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gameDoh Showcase</title>
+    <link rel="icon" href="https://gamedoh.jskidz.au/favicon.ico" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        background: #f3f4f6;
+        color: #111827;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        min-height: 100vh;
+      }
+
+      /* ── Header top bar ── */
+      .header-top {
+        background: #30a3f1;
+        padding: 0 24px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .header-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+      }
+
+      .brand-logo {
+        font-size: 22px;
+        font-weight: 900;
+        color: white;
+        line-height: 1;
+      }
+
+      .brand-logo .js { color: white; }
+      .brand-logo .kidz { color: #f49e63; }
+
+      .brand-tagline {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.3;
+      }
+
+      .brand-tagline span {
+        font-size: 11px;
+        color: rgba(255,255,255,0.9);
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+
+      .brand-tagline em {
+        font-size: 11px;
+        color: rgba(255,255,255,0.75);
+        font-style: italic;
+      }
+
+      .header-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 20px;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+      }
+
+      .header-title .game { color: white; }
+      .header-title .doh  { color: #f49e63; }
+      .header-title .showcase { color: white; font-weight: 400; }
+
+      /* ── Sub-bar ── */
+      .header-sub {
+        background: white;
+        border-bottom: 1px solid #e5e7eb;
+        padding: 0 24px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .browse-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: #111827;
+        white-space: nowrap;
+      }
+
+      .browse-count {
+        font-size: 14px;
+        color: #6b7280;
+        white-space: nowrap;
+      }
+
+      .search-input {
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 14px;
+        color: #374151;
+        width: 220px;
+        outline: none;
+      }
+
+      .search-input:focus { border-color: #30a3f1; }
+
+      .sub-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-leaderboard {
+        border: 1px solid #d1d5db;
+        background: white;
+        color: #374151;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .btn-leaderboard:hover { background: #f9fafb; }
+
+      .btn-add-game {
+        background: #f49e63;
+        color: white;
+        padding: 6px 16px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .btn-add-game:hover { background: #e8874a; }
+
+      .btn-login {
+        border: 1px solid #30a3f1;
+        background: white;
+        color: #30a3f1;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .btn-login:hover { background: #eff8ff; }
+
+      /* ── Main content ── */
+      .main {
+        max-width: 1200px;
+        margin: 32px auto;
+        padding: 0 24px 80px;
+      }
+
+      .section-title {
+        font-size: 15px;
+        color: #6b7280;
+        margin-bottom: 20px;
+      }
+
+      /* ── Game Grid ── */
+      .games-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+
+      .game-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+        transition: transform 0.15s, box-shadow 0.15s;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+
+      .game-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      }
+
+      .card-thumb {
+        width: 100%;
+        height: 160px;
+        display: block;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card-thumb canvas {
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+      }
+
+      .card-thumb-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.15s;
+        background: rgba(0,0,0,0.3);
+      }
+
+      .game-card:hover .card-thumb-overlay { opacity: 1; }
+
+      .play-pill {
+        background: #30a3f1;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 700;
+        transform: scale(0.9);
+        transition: transform 0.15s;
+      }
+
+      .game-card:hover .play-pill { transform: scale(1); }
+
+      .card-body {
+        padding: 14px 16px 12px;
+      }
+
+      .card-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #111827;
+        margin-bottom: 4px;
+      }
+
+      .card-desc {
+        font-size: 13px;
+        color: #6b7280;
+        line-height: 1.5;
+        margin-bottom: 10px;
+      }
+
+      .card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+
+      .tag {
+        background: #e0f2fe;
+        color: #0369a1;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
+
+      .card-author {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-top: 10px;
+        border-top: 1px solid #f3f4f6;
+      }
+
+      .author-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #e5e7eb;
+        flex-shrink: 0;
+        image-rendering: pixelated;
+      }
+
+      .author-name {
+        font-size: 13px;
+        color: #374151;
+        font-weight: 500;
+        flex: 1;
+      }
+
+      .author-stats {
+        font-size: 12px;
+        color: #9ca3af;
+        display: flex;
+        gap: 8px;
+        white-space: nowrap;
+      }
+
+      /* ── Footer ── */
+      footer {
+        background: #303846;
+        color: #cbd5e1;
+        padding: 40px 24px 24px;
+      }
+
+      .footer-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 32px;
+        margin-bottom: 32px;
+      }
+
+      .footer-brand .logo-text {
+        font-size: 22px;
+        font-weight: 900;
+        margin-bottom: 6px;
+      }
+
+      .footer-brand .logo-text .js { color: #ffffff; }
+      .footer-brand .logo-text .kidz { color: #f49e63; }
+
+      .footer-brand p {
+        font-size: 13px;
+        color: #94a3b8;
+      }
+
+      .footer-col h4 {
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #f1f5f9;
+        margin-bottom: 12px;
+      }
+
+      .footer-col a {
+        display: block;
+        font-size: 14px;
+        color: #94a3b8;
+        text-decoration: none;
+        margin-bottom: 8px;
+        transition: color 0.15s;
+      }
+
+      .footer-col a:hover { color: #e2e8f0; }
+
+      .footer-copy {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-top: 20px;
+        border-top: 1px solid #3f4a5a;
+        font-size: 13px;
+        color: #64748b;
+        text-align: center;
+      }
+
+      @media (max-width: 640px) {
+        .footer-inner { grid-template-columns: 1fr; }
+        .sub-actions .btn-leaderboard, .sub-actions .btn-login { display: none; }
+        .search-input { width: 120px; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="header-top">
+      <a class="header-brand" href="https://jskidz.au" target="_blank">
+        <div class="brand-logo"><span class="js">js</span><span class="kidz">Kidz</span></div>
+        <div class="brand-tagline">
+          <span>1 STOP</span>
+          <em>2 Democratize CODing</em>
+        </div>
+      </a>
+      <a class="header-title" href="https://gamedoh.jskidz.au" target="_blank">
+        <span>🎮</span>
+        <span><span class="game">game</span><span class="doh">Doh</span> <span class="showcase">Showcase</span></span>
+      </a>
+    </div>
+
+    <div class="header-sub">
+      <span class="browse-label">Browse</span>
+      <span class="browse-count"><span id="game-count">11</span> of <span id="game-count2">11</span> games</span>
+      <input class="search-input" type="text" placeholder="Search games..." id="search" />
+      <div class="sub-actions">
+        <a class="btn-leaderboard" href="https://gamedoh.jskidz.au/leaderboard" target="_blank">🏆 Leaderboard</a>
+        <a class="btn-add-game" href="https://gamedoh.jskidz.au/games/new" target="_blank">+ Add My Game</a>
+        <a class="btn-login" href="#">Login</a>
+      </div>
+    </div>
+
+    <main class="main">
+      <div class="games-grid" id="grid"></div>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="logo-text"><span class="js">js</span><span class="kidz">Kidz</span></div>
+          <p>1 STOP · 2 Democratize CODing</p>
+        </div>
+        <div class="footer-col">
+          <h4>Tools</h4>
+          <a href="https://jskidz.au/pixel-art">Pixel Art Creator</a>
+          <a href="https://jskidz.au/tdd-kata">TDD Kata</a>
+        </div>
+        <div class="footer-col">
+          <h4>Powered By</h4>
+          <a href="https://gamedoh.jskidz.au">gameDoh Showcase</a>
+          <a href="https://jskidz.au">jsKidz.au</a>
+        </div>
+      </div>
+      <div class="footer-copy">© 2026 gameDoh Showcase</div>
+    </footer>
+
+    <script>
+      // ── Game data ──────────────────────────────────────────────────────────
+      const GAMES = [
+        {
+          id: 'searching-carrot',
+          title: 'Searching Carrot',
+          desc: 'Navigate a bunny across a large world and collect all carrots before time runs out.',
+          tags: ['collect', 'bunny', 'camera', 'timer'],
+          author: 'freemany',
+          level: 'beginner',
+          draw: drawCarrot,
+        },
+        {
+          id: 'offline-dino',
+          title: 'Dino Run',
+          desc: 'Jump over obstacles and dodge birds in this endless runner inspired by the Chrome offline game.',
+          tags: ['runner', 'jump', 'dino', 'endless'],
+          author: 'freemany',
+          level: 'intermediate',
+          draw: drawDino,
+        },
+        {
+          id: 'doodle-jump',
+          title: 'Doodle Jump',
+          desc: 'Jump higher and higher on platforms, avoiding enemies in this vertical scroller.',
+          tags: ['jump', 'platforms', 'gravity', 'scroll'],
+          author: 'freemany',
+          level: 'beginner',
+          draw: drawDoodle,
+        },
+        {
+          id: 'spaceinvaders',
+          title: 'Space Invaders',
+          desc: 'Defend Earth from descending alien formations. Shoot fast before they reach the ground.',
+          tags: ['shoot', 'invader', 'space', 'ship'],
+          author: 'freemany',
+          level: 'intermediate',
+          draw: drawSpaceInvaders,
+        },
+        {
+          id: 'pacman',
+          title: 'Pac-Man',
+          desc: 'Eat all the dots, avoid ghosts, and use power-ups to turn the tables.',
+          tags: ['maze', 'ghost', 'dots', 'classic'],
+          author: 'freemany',
+          level: 'intermediate',
+          draw: drawPacman,
+        },
+        {
+          id: 'tetris',
+          title: 'Tetris',
+          desc: 'Clear lines by stacking falling blocks. Speeds up as you survive longer.',
+          tags: ['puzzle', 'blocks', 'classic', 'brain'],
+          author: 'tintin',
+          level: 'intermediate',
+          draw: drawTetris,
+        },
+        {
+          id: 'race-car',
+          title: 'Race Car',
+          desc: 'Overtake opponents on scrolling roads across multiple race tracks.',
+          tags: ['racing', 'car', 'scroll', 'speed'],
+          author: 'freemany',
+          level: 'intermediate',
+          draw: drawRaceCar,
+        },
+        {
+          id: 'street-fighters',
+          title: 'Street Fighters',
+          desc: 'A pixel-art fighting game with punches, kicks, jumps, and crouch animations.',
+          tags: ['fighter', 'combat', 'pixel', 'action'],
+          author: 'freemany',
+          level: 'intermediate',
+          draw: drawStreetFighter,
+        },
+        {
+          id: 'super-mario',
+          title: 'Super Mario',
+          desc: 'Run and jump through platformer levels with tiles, enemies, and power-ups.',
+          tags: ['platformer', 'jump', 'mario', 'tiles'],
+          author: 'freemany',
+          level: 'advanced',
+          draw: drawMario,
+        },
+        {
+          id: 'contra',
+          title: 'Contra',
+          desc: 'Multi-level side-scrolling shooter with weapons, enemies, and terrain.',
+          tags: ['shooter', 'action', 'levels', 'weapons'],
+          author: 'freemany',
+          level: 'advanced',
+          draw: drawContra,
+        },
+        {
+          id: 'breakout',
+          title: 'Breakout',
+          desc: 'Smash all the bricks with a bouncing ball. 3 levels, increasing speed, shaking screen when you miss.',
+          tags: ['paddle', 'ball', 'bricks', 'physics'],
+          author: 'freemany',
+          level: 'beginner',
+          draw: drawBreakout,
+        },
+        {
+          id: 'bomberman',
+          title: 'Bomberman',
+          desc: 'Single-player tactical puzzle. Plant bombs, blast enemies, find the key and escape before the timer runs out. 4 enemy types, 5 power-ups.',
+          tags: ['bombs', 'maze', 'puzzle', 'enemies', 'pixel-art'],
+          author: 'freemany',
+          level: 'intermediate',
+          draw: drawBomberman,
+        },
+        {
+          id: 'starter-kit',
+          title: 'Starter Kit',
+          desc: 'The blank template. Copy this folder to build your own game with everything wired up.',
+          tags: ['template', 'engine', 'tutorial'],
+          author: 'freemany',
+          level: 'beginner',
+          draw: drawStarterKit,
+        },
+      ];
+
+      // ── Thumbnail drawers ──────────────────────────────────────────────────
+      function px(ctx, color, x, y, w, h) {
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, w, h);
+      }
+
+      function drawCarrot(ctx, W, H) {
+        // sky / ground
+        px(ctx, '#e8f5e9', 0, 0, W, H);
+        // grid lines
+        ctx.strokeStyle = '#c8e6c9'; ctx.lineWidth = 1;
+        for (let x = 0; x < W; x += 16) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+        for (let y = 0; y < H; y += 16) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+        // carrots
+        const carrots = [[60,50],[140,90],[210,40],[280,110]];
+        carrots.forEach(([cx,cy]) => {
+          px(ctx, '#ff6d00', cx, cy+6, 6, 14); px(ctx, '#ff6d00', cx+3, cy+4, 6, 16);
+          px(ctx, '#43a047', cx+2, cy, 4, 8); px(ctx, '#43a047', cx+5, cy-2, 3, 6);
+        });
+        // bunny
+        px(ctx, '#f5f5f5', 100, 70, 20, 22);
+        px(ctx, '#f5f5f5', 104, 60, 6, 12); px(ctx, '#f5f5f5', 112, 62, 6, 10);
+        px(ctx, '#333', 105, 74, 3, 3); px(ctx, '#333', 112, 74, 3, 3);
+        px(ctx, '#ffb3ba', 109, 78, 4, 2);
+      }
+
+      function drawDino(ctx, W, H) {
+        px(ctx, '#87ceeb', 0, 0, W, H);
+        // ground
+        px(ctx, '#8d6e63', 0, H-24, W, 8);
+        px(ctx, '#66bb6a', 0, H-28, W, 6);
+        // clouds
+        [[30,30],[120,20],[220,35]].forEach(([x,y]) => {
+          px(ctx, 'white', x, y, 40, 12); px(ctx, 'white', x+8, y-8, 24, 12);
+        });
+        // dino
+        const dx=60, dy=H-70;
+        px(ctx, '#424242', dx, dy, 20, 30); px(ctx, '#424242', dx-2, dy+4, 4, 8);
+        px(ctx, '#424242', dx, dy-10, 18, 14); px(ctx, '#616161', dx+14, dy-4, 6, 6);
+        px(ctx, '#fff', dx+15, dy-2, 3, 3);
+        px(ctx, '#424242', dx+4, dy+28, 6, 8); px(ctx, '#424242', dx+12, dy+28, 6, 8);
+        // cactus
+        px(ctx, '#388e3c', 240, H-60, 10, 36); px(ctx, '#388e3c', 232, H-48, 8, 6); px(ctx, '#388e3c', 248, H-44, 8, 6);
+      }
+
+      function drawDoodle(ctx, W, H) {
+        px(ctx, '#fff9f0', 0, 0, W, H);
+        // platforms
+        [[20,130,'#8bc34a'],[100,100,'#8bc34a'],[180,70,'#8bc34a'],[260,50,'#ff9800'],[60,40,'#8bc34a']].forEach(([x,y,c]) => {
+          px(ctx, c, x, y, 70, 12); ctx.beginPath(); ctx.arc(x+35, y, 4, 0, Math.PI*2); ctx.fillStyle=c; ctx.fill();
+        });
+        // character
+        px(ctx, '#4fc3f7', 120, 50, 18, 20);
+        px(ctx, '#ffe0b2', 123, 42, 12, 12);
+        px(ctx, '#333', 125, 46, 3, 3); px(ctx, '#333', 131, 46, 3, 3);
+      }
+
+      function drawSpaceInvaders(ctx, W, H) {
+        px(ctx, '#0a0a1a', 0, 0, W, H);
+        // stars
+        ctx.fillStyle='white';
+        [[20,15],[60,40],[100,8],[150,30],[200,18],[250,45],[290,10],[40,55],[180,50]].forEach(([x,y])=>ctx.fillRect(x,y,2,2));
+        // aliens row 1 - magenta
+        for (let i=0;i<5;i++) {
+          const x=30+i*54, y=30;
+          px(ctx,'#e040fb',x+6,y,12,4); px(ctx,'#e040fb',x,y+4,24,8); px(ctx,'#e040fb',x+4,y+12,16,4);
+          px(ctx,'#e040fb',x+2,y+16,4,4); px(ctx,'#e040fb',x+18,y+16,4,4);
+        }
+        // aliens row 2 - cyan
+        for (let i=0;i<5;i++) {
+          const x=30+i*54, y=70;
+          px(ctx,'#00bcd4',x+4,y,16,4); px(ctx,'#00bcd4',x,y+4,24,8); px(ctx,'#00bcd4',x+2,y+12,20,4);
+        }
+        // ship
+        px(ctx,'#4caf50',W/2-16,H-28,32,10); px(ctx,'#4caf50',W/2-8,H-36,16,10); px(ctx,'#4caf50',W/2-2,H-40,4,6);
+        // bullet
+        px(ctx,'#ffeb3b',W/2,H-46,4,12);
+        // shields
+        [[50,H-50],[120,H-50],[190,H-50],[260,H-50]].forEach(([x,y])=>{
+          px(ctx,'#4caf50',x,y,24,14); px(ctx,'#4caf50',x+4,y+14,6,6); px(ctx,'#4caf50',x+14,y+14,6,6);
+        });
+      }
+
+      function drawPacman(ctx, W, H) {
+        px(ctx, '#000', 0, 0, W, H);
+        // maze walls
+        ctx.strokeStyle='#1565c0'; ctx.lineWidth=6; ctx.lineJoin='round';
+        [[10,10,W-10,10],[10,10,10,H-10],[W-10,10,W-10,H-10],[10,H-10,W-10,H-10],
+         [10,50,100,50],[130,50,W-10,50],[10,90,60,90],[100,90,W-10,90],
+         [60,50,60,90],[W-60,50,W-60,90]].forEach(([x1,y1,x2,y2])=>{
+          ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+        });
+        // dots
+        ctx.fillStyle='#fff';
+        for (let i=0;i<6;i++) ctx.beginPath(), ctx.arc(80+i*20,70,3,0,Math.PI*2), ctx.fill();
+        // pac-man
+        ctx.fillStyle='#ffeb3b';
+        ctx.beginPath(); ctx.moveTo(60,70); ctx.arc(60,70,20, 0.3, Math.PI*1.7); ctx.closePath(); ctx.fill();
+        // ghost
+        ctx.fillStyle='#e53935';
+        ctx.beginPath(); ctx.arc(200,70,18,Math.PI,0); ctx.rect(182,70,36,18);
+        [182,191,200,209].forEach(x=>{ ctx.beginPath(); ctx.arc(x+4.5,88,4.5,0,Math.PI); ctx.fill(); });
+        ctx.fillStyle='#e53935'; ctx.fillRect(182,52,36,36);
+        ctx.fillStyle='white'; ctx.beginPath(); ctx.arc(194,62,5,0,Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(208,62,5,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#1a237e'; ctx.beginPath(); ctx.arc(196,62,3,0,Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(210,62,3,0,Math.PI*2); ctx.fill();
+      }
+
+      function drawTetris(ctx, W, H) {
+        px(ctx, '#0d0d1a', 0, 0, W, H);
+        const bw=W/12, bh=H/20;
+        const pieces=[
+          {color:'#00bcd4', blocks:[[4,18],[5,18],[4,17],[5,17]]},
+          {color:'#e53935', blocks:[[3,16],[4,16],[5,16],[6,16]]},
+          {color:'#4caf50', blocks:[[3,15],[4,15],[4,14],[5,14]]},
+          {color:'#ff9800', blocks:[[3,14],[3,13],[4,13],[5,13]]},
+          {color:'#9c27b0', blocks:[[3,12],[4,12],[5,12],[4,11]]},
+          {color:'#e53935', blocks:[[3,11],[4,11],[3,10],[4,10]]},
+          {color:'#00bcd4', blocks:[[6,13],[7,13],[8,13],[7,12],[7,11]]},
+        ];
+        pieces.forEach(({color,blocks})=>{
+          blocks.forEach(([bx,by])=>{
+            ctx.fillStyle=color; ctx.fillRect(bx*bw+1, by*bh+1, bw-2, bh-2);
+            ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.fillRect(bx*bw+1, by*bh+1, bw-2, 3);
+          });
+        });
+        // border
+        ctx.strokeStyle='#1e88e5'; ctx.lineWidth=2;
+        ctx.strokeRect(0,0,W*0.6,H);
+        // score panel
+        px(ctx,'#111',W*0.62,20,W*0.34,H-40);
+        ctx.fillStyle='#90caf9'; ctx.font='bold 11px monospace'; ctx.textAlign='center';
+        ctx.fillText('SCORE',W*0.79,40);
+        ctx.fillStyle='white'; ctx.font='bold 14px monospace';
+        ctx.fillText('1240',W*0.79,60);
+        ctx.fillStyle='#90caf9'; ctx.font='bold 11px monospace';
+        ctx.fillText('LEVEL',W*0.79,90); ctx.fillStyle='#29b6f6'; ctx.font='bold 22px monospace'; ctx.fillText('1',W*0.79,115);
+      }
+
+      function drawRaceCar(ctx, W, H) {
+        px(ctx,'#546e7a',0,0,W,H);
+        // road
+        px(ctx,'#37474f',W*0.2,0,W*0.6,H);
+        // road lines
+        ctx.strokeStyle='#fff'; ctx.lineWidth=3; ctx.setLineDash([20,15]);
+        ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke(); ctx.setLineDash([]);
+        // road edges
+        px(ctx,'#fdd835',W*0.2,0,6,H); px(ctx,'#fdd835',W*0.8-6,0,6,H);
+        // trees
+        [[20,30],[22,90],[18,130],[W-40,20],[W-42,80],[W-38,120]].forEach(([x,y])=>{
+          px(ctx,'#2e7d32',x,y,24,30); px(ctx,'#1b5e20',x+4,y-16,16,20);
+        });
+        // player car (red)
+        const cx=W/2-16, cy=H-60;
+        px(ctx,'#e53935',cx,cy,32,50); px(ctx,'#b71c1c',cx+4,cy+4,24,32);
+        px(ctx,'#90caf9',cx+6,cy+6,8,10); px(ctx,'#90caf9',cx+18,cy+6,8,10);
+        px(ctx,'#212121',cx-4,cy+6,8,12); px(ctx,'#212121',cx+28,cy+6,8,12);
+        px(ctx,'#212121',cx-4,cy+32,8,12); px(ctx,'#212121',cx+28,cy+32,8,12);
+        // opponent car (blue)
+        const ox=W/2+30, oy=H-130;
+        px(ctx,'#1e88e5',ox,oy,28,44); px(ctx,'#0d47a1',ox+4,oy+4,20,28);
+        px(ctx,'#212121',ox-4,oy+6,6,10); px(ctx,'#212121',ox+26,oy+6,6,10);
+        px(ctx,'#212121',ox-4,oy+28,6,10); px(ctx,'#212121',ox+26,oy+28,6,10);
+      }
+
+      function drawStreetFighter(ctx, W, H) {
+        // background
+        const sky=ctx.createLinearGradient(0,0,0,H*0.7);
+        sky.addColorStop(0,'#1a1a3e'); sky.addColorStop(1,'#3a3a7e');
+        px(ctx,'', 0,0,W,H); ctx.fillStyle=sky; ctx.fillRect(0,0,W,H*0.75);
+        // buildings silhouette
+        ctx.fillStyle='#1e1e4a';
+        [[0,60,50,80],[40,80,60,40],[90,50,70,90],[150,70,50,60],[190,40,80,100],[260,60,60,70]].forEach(([x,y,w,h])=>px(ctx,'#1e1e4a',x,H*0.75-h,w,h));
+        // ground
+        px(ctx,'#5a3a1a',0,H*0.75,W,H*0.25);
+        px(ctx,'#3a6020',0,H*0.75,W,6);
+        // fighter 1 (left)
+        const f1x=60, f1y=H*0.75-70;
+        px(ctx,'#ffe0b2',f1x+8,f1y,12,12); // head
+        px(ctx,'#fff',f1x+4,f1y+12,18,22); // gi
+        px(ctx,'#1565c0',f1x+4,f1y+22,18,4); // belt
+        px(ctx,'#ffe0b2',f1x,f1y+14,6,12); // arm left
+        px(ctx,'#ffe0b2',f1x+22,f1y+14,8,8); // arm right (punch)
+        px(ctx,'#1565c0',f1x+6,f1y+34,8,20); px(ctx,'#1565c0',f1x+14,f1y+34,8,20); // legs
+        // fighter 2 (right, mirror)
+        const f2x=W-90, f2y=H*0.75-70;
+        px(ctx,'#ffe0b2',f2x+8,f2y,12,12);
+        px(ctx,'#fff',f2x+6,f2y+12,18,22);
+        px(ctx,'#c62828',f2x+6,f2y+22,18,4);
+        px(ctx,'#ffe0b2',f2x+22,f2y+14,6,12);
+        px(ctx,'#ffe0b2',f2x-6,f2y+14,8,8);
+        px(ctx,'#c62828',f2x+6,f2y+34,8,20); px(ctx,'#c62828',f2x+14,f2y+34,8,20);
+      }
+
+      function drawMario(ctx, W, H) {
+        // sky
+        px(ctx,'#5c94fc',0,0,W,H);
+        // clouds
+        [[30,20],[140,30],[230,15]].forEach(([x,y])=>{
+          px(ctx,'white',x,y,50,18); px(ctx,'white',x+8,y-10,34,14);
+        });
+        // ground
+        px(ctx,'#c84b0c',0,H-30,W,30);
+        // bricks
+        for(let bx=0; bx<Math.ceil(W/32); bx++) {
+          px(ctx,'#c84b0c',bx*32,H-30,30,28);
+          px(ctx,'#a0330a',bx*32,H-30,30,4);
+          px(ctx,'#a0330a',bx*32,H-30,2,28);
+        }
+        // pipes
+        px(ctx,'#00a800',200,H-70,36,42); px(ctx,'#00d800',204,H-70,28,40);
+        px(ctx,'#00a800',194,H-78,48,12);
+        // brick blocks
+        [[80,H-80],[112,H-80],[144,H-80]].forEach(([x,y])=>{
+          px(ctx,'#c84b0c',x,y,28,28); px(ctx,'#a0330a',x,y,28,4); px(ctx,'#a0330a',x,y,2,28);
+        });
+        // mario
+        const mx=60, my=H-78;
+        px(ctx,'#e52b0c',mx,my,24,10); // hat
+        px(ctx,'#ffe0b2',mx+4,my+10,16,12); // face
+        px(ctx,'#c84b0c',mx+2,my+14,20,6); // overalls top
+        px(ctx,'#1565c0',mx+2,my+20,20,14); // overalls
+        px(ctx,'#c84b0c',mx,my+34,10,10); px(ctx,'#c84b0c',mx+14,my+34,10,10); // shoes
+      }
+
+      function drawContra(ctx, W, H) {
+        px(ctx,'#0d1b2a',0,0,W,H);
+        // jungle bg
+        ctx.fillStyle='#1b3a1b';
+        for (let i=0;i<8;i++) { const x=i*40; px(ctx,'#1b3a1b',x,0,20,H*0.6+Math.sin(i)*20); }
+        // ground
+        px(ctx,'#3e2a1e',0,H-35,W,35);
+        px(ctx,'#2d5a1b',0,H-40,W,10);
+        // terrain/platforms
+        px(ctx,'#3e2a1e',50,H-75,80,40); px(ctx,'#2d5a1b',50,H-80,80,8);
+        px(ctx,'#3e2a1e',180,H-100,70,70); px(ctx,'#2d5a1b',180,H-105,70,8);
+        // player 1 (red)
+        const p1x=70, p1y=H-110;
+        px(ctx,'#e53935',p1x+6,p1y,10,10);
+        px(ctx,'#ffe0b2',p1x+7,p1y,8,8);
+        px(ctx,'#78909c',p1x+4,p1y+8,14,16);
+        px(ctx,'#546e7a',p1x+4,p1y+24,14,14);
+        px(ctx,'#78909c',p1x+16,p1y+12,20,5); // gun
+        // bullets
+        px(ctx,'#ffd54f',p1x+36,p1y+13,14,3); px(ctx,'#ffd54f',p1x+40,p1y+10,14,3);
+        // player 2
+        const p2x=30, p2y=H-105;
+        px(ctx,'#ffe0b2',p2x+7,p2y,8,8);
+        px(ctx,'#1565c0',p2x+4,p2y+8,14,16); px(ctx,'#0d47a1',p2x+4,p2y+24,14,14);
+        px(ctx,'#78909c',p2x+16,p2y+12,20,5);
+        // enemies
+        [[220,H-130],[250,H-125]].forEach(([ex,ey])=>{
+          px(ctx,'#b71c1c',ex+4,ey,10,10); px(ctx,'#ffe0b2',ex+5,ey,8,8);
+          px(ctx,'#4a148c',ex+2,ey+8,14,16); px(ctx,'#4a148c',ex+2,ey+24,14,14);
+        });
+      }
+
+      function drawBomberman(ctx, W, H) {
+        // Dark bg
+        px(ctx, '#0d0d1a', 0, 0, W, H);
+        // Grid tiles
+        const ts = Math.floor(W / 10);
+        for (let r = 0; r < 8; r++) {
+          for (let c = 0; c < 10; c++) {
+            const x = c * ts, y = 16 + r * ts;
+            if (r % 2 === 1 && c % 2 === 1) {
+              px(ctx, '#4a4a5a', x, y, ts-1, ts-1);
+            } else if (Math.random() < 0.35) {
+              px(ctx, '#8b4513', x, y, ts-1, ts-1);
+            } else {
+              px(ctx, r % 2 === c % 2 ? '#2d5a1b' : '#356820', x, y, ts-1, ts-1);
+            }
+          }
+        }
+        // Player (white bomber)
+        const px2 = 3, py2 = 20;
+        px(ctx,'#ffffff', px2+2, py2, ts-6, ts*0.5);
+        px(ctx,'#4444cc', px2+1, py2+ts*0.5, ts-4, ts*0.5-2);
+        // Bomb
+        ctx.fillStyle = '#222';
+        ctx.beginPath(); ctx.arc(ts*3+ts/2, 16+ts*2+ts/2, ts*0.38, 0, Math.PI*2); ctx.fill();
+        ctx.strokeStyle = '#f90'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(ts*3+ts/2+5, 16+ts*2+4); ctx.lineTo(ts*3+ts/2+8, 16+ts*2-4); ctx.stroke();
+        // Flames
+        ctx.fillStyle = '#ff9900'; ctx.globalAlpha = 0.85;
+        px(ctx,'#ff9900', ts*2+2, 16+ts*2+2, ts-4, ts-4);
+        px(ctx,'#ff6600', ts*4+2, 16+ts*2+2, ts-4, ts-4);
+        ctx.globalAlpha = 1;
+        // Enemy (red)
+        px(ctx,'#e53935', ts*7+3, 16+ts*4+3, ts-6, ts-6);
+        px(ctx,'#ffffff', ts*7+5, 16+ts*4+5, 4, 4); px(ctx,'#ffffff', ts*7+10, 16+ts*4+5, 4, 4);
+        // Enemy (orange)
+        px(ctx,'#ff9800', ts*5+3, 16+ts*6+3, ts-6, ts-6);
+        // Key icon
+        ctx.fillStyle = '#fdd835'; ctx.font = 'bold 10px monospace';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('KEY', ts*8+ts/2, 16+ts*5+ts/2);
+      }
+
+      function drawBreakout(ctx, W, H) {
+        px(ctx, '#0d1b2a', 0, 0, W, H);
+        // Bricks
+        const colors = ['#e53935','#fb8c00','#fdd835','#43a047'];
+        const bw = 28, bh = 10, gap = 3, cols = 9;
+        const offsetX = (W - (cols * (bw + gap) - gap)) / 2;
+        colors.forEach((color, row) => {
+          for (let col = 0; col < cols; col++) {
+            const x = offsetX + col * (bw + gap);
+            const y = 18 + row * (bh + gap);
+            px(ctx, color, x, y, bw, bh);
+            px(ctx, 'rgba(255,255,255,0.25)', x, y, bw, 3);
+          }
+        });
+        // Paddle
+        px(ctx, '#4fc3f7', W/2 - 30, H - 22, 60, 8);
+        // Ball
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(W/2 + 20, H - 50, 6, 0, Math.PI * 2);
+        ctx.fill();
+        // Ball trail
+        ctx.fillStyle = 'rgba(255,255,255,0.3)';
+        ctx.beginPath(); ctx.arc(W/2 + 12, H - 42, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = 'rgba(255,255,255,0.15)';
+        ctx.beginPath(); ctx.arc(W/2 + 4, H - 34, 3, 0, Math.PI * 2); ctx.fill();
+      }
+
+      function drawStarterKit(ctx, W, H) {
+        px(ctx,'#f8faff',0,0,W,H);
+        // grid
+        ctx.strokeStyle='#e8edf8'; ctx.lineWidth=1;
+        for(let x=0;x<W;x+=20){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+        for(let y=0;y<H;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+        // engine icon - gears/cog
+        const cx=W/2, cy=H/2;
+        ctx.fillStyle='#30a3f1';
+        ctx.beginPath(); ctx.arc(cx,cy,32,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='white';
+        ctx.beginPath(); ctx.arc(cx,cy,18,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#30a3f1';
+        ctx.beginPath(); ctx.arc(cx,cy,10,0,Math.PI*2); ctx.fill();
+        // cog teeth
+        for(let i=0;i<8;i++){
+          const a=i*Math.PI/4;
+          ctx.save(); ctx.translate(cx,cy); ctx.rotate(a);
+          ctx.fillStyle='#30a3f1'; ctx.fillRect(-5,-38,10,12);
+          ctx.restore();
+        }
+        // label
+        ctx.fillStyle='#374151'; ctx.font='bold 13px monospace';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText('STARTER KIT',cx,cy+56);
+        ctx.fillStyle='#9ca3af'; ctx.font='11px monospace';
+        ctx.fillText('copy → build → play',cx,cy+72);
+      }
+
+      // ── Avatar drawers ────────────────────────────────────────────────────
+      function drawAvatar(canvas, name) {
+        const ctx = canvas.getContext('2d');
+        const colors = {'freemany':'#30a3f1','tintin':'#f49e63','coder':'#4caf50'};
+        const c = colors[name] || '#888';
+        px(ctx, c, 0, 0, 28, 28);
+        ctx.fillStyle = 'white';
+        ctx.font = 'bold 12px monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(name[0].toUpperCase(), 14, 14);
+      }
+
+      // ── Badge helper ──────────────────────────────────────────────────────
+      const BADGE_COLOR = { beginner:'#dcfce7:#166534', intermediate:'#fef3c7:#92400e', advanced:'#fee2e2:#991b1b' };
+
+      // ── Render cards ──────────────────────────────────────────────────────
+      const grid = document.getElementById('grid');
+      const today = '3 June 2026';
+
+      GAMES.forEach(g => {
+        const card = document.createElement('a');
+        card.className = 'game-card';
+        card.href = `games/${g.id}/index.html`;
+        card.target = '_blank';
+
+        const [bg, tc] = (BADGE_COLOR[g.level] || '#e5e7eb:#374151').split(':');
+
+        card.innerHTML = `
+          <div class="card-thumb">
+            <canvas id="c-${g.id}" width="320" height="160"></canvas>
+            <div class="card-thumb-overlay"><div class="play-pill">▶ Play</div></div>
+          </div>
+          <div class="card-body">
+            <div class="card-title">${g.title}</div>
+            <div class="card-desc">${g.desc}</div>
+            <div class="card-tags">
+              <span class="tag" style="background:${bg};color:${tc}">${g.level}</span>
+              ${g.tags.map(t=>`<span class="tag">${t}</span>`).join('')}
+            </div>
+            <div class="card-author">
+              <canvas class="author-avatar" id="av-${g.id}" width="28" height="28"></canvas>
+              <span class="author-name">${g.author}</span>
+              <span class="author-stats"><span>▶ 0</span><span>⬇ 0</span><span>${today}</span></span>
+            </div>
+          </div>`;
+
+        grid.appendChild(card);
+
+        // Draw after appending so canvas is in DOM
+        requestAnimationFrame(() => {
+          const thumbCanvas = document.getElementById(`c-${g.id}`);
+          if (thumbCanvas) {
+            const tctx = thumbCanvas.getContext('2d');
+            g.draw(tctx, 320, 160);
+          }
+          const avCanvas = document.getElementById(`av-${g.id}`);
+          if (avCanvas) drawAvatar(avCanvas, g.author);
+        });
+      });
+
+      const total = GAMES.length;
+      document.getElementById('game-count').textContent = total;
+      document.getElementById('game-count2').textContent = total;
+
+      // Search filter
+      document.getElementById('search').addEventListener('input', function() {
+        const q = this.value.toLowerCase();
+        let visible = 0;
+        grid.querySelectorAll('.game-card').forEach((card, i) => {
+          const g = GAMES[i];
+          const match = !q || g.title.toLowerCase().includes(q) || g.desc.toLowerCase().includes(q) || g.tags.some(t => t.includes(q));
+          card.style.display = match ? '' : 'none';
+          if (match) visible++;
+        });
+        document.getElementById('game-count').textContent = visible;
+      });
+    </script>
+  </body>
+</html>

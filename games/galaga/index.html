@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galaga</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        background: #000;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 12px 0 24px;
+        overflow-y: auto;
+      }
+      canvas {
+        display: block;
+        cursor: pointer;
+        border: 1px solid #222;
+      }
+      #loading {
+        color: #ff0;
+        font-family: monospace;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading">Loading...</div>
+    <canvas id="gameCanvas" style="display: none"></canvas>
+    <audio id="overAudio" src="https://jskidz.au/audio/game-over.wav"></audio>
+    <audio id="winAudio"  src="https://jskidz.au/audio/winning-chimes.wav"></audio>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

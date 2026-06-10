@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doodle Jump</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        background: #b3e5fc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      canvas { display: block; }
+      #loading {
+        color: #1565c0;
+        font-family: monospace;
+        font-size: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading">Loading...</div>
+    <canvas id="gameCanvas" style="display: none"></canvas>
+    <script type="module" src="./main.js"></script>
+    <!-- Audio files from https://jskidz.au/audio -->
+    <audio id="overAudio" src="https://jskidz.au/audio/game-over.wav"></audio>
+    <audio id="winAudio"  src="https://jskidz.au/audio/winning-chimes.wav"></audio>
+  </body>
+</html>

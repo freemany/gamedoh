@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Game.js Unit Tests</title>
+    <style>
+      body { font-family: monospace; background: #1a1a2e; color: #ccc; padding: 20px; }
+      h2 { color: #f5a623; }
+    </style>
+  </head>
+  <body>
+    <h2>Game.js Unit Tests</h2>
+    <p>Open DevTools console to see results.</p>
+
+    <audio id="overAudio"></audio>
+    <audio id="winAudio"></audio>
+
+    <script type="module">
+      import { test } from './testLibs.js';
+      import { GAME_STATE } from './constants.js';
+      import Game from './Game.js';
+
+      // ── Test helpers ───────────────────────────────────────────
+
+      class TestGame extends Game {
+        _update() {}
+        _drawWorld() {}
+        drawStartScreen() {}
+        drawPauseOverlay() {}
+        drawGameOverScreen() {}
+        drawWinScreen() {}
+        drawHUD() {}
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 400;
+      canvas.height = 300;
+      const ctx = canvas.getContext('2d');
+
+      const makeGame = (overrides = {}) =>
+        new TestGame(ctx, { canvas }, {
+          canvasWidth: 400, canvasHeight: 300, blockSize: 5,
+          heartbeat: 30, lives: 3, initialSpeed: 2,
+          maxSpeed: 6, speedUpEvery: 10,
+          ...overrides,
+        });
+
+      // ── Constructor ────────────────────────────────────────────
+
+      test([
+        { data: 'score',  expected: 0,                msg: 'initial score is 0' },
+        { data: 'lives',  expected: 3,                msg: 'initial lives matches config' },
+        { data: 'speed',  expected: 2,                msg: 'initial speed matches initialSpeed' },
+        { data: 'state',  expected: GAME_STATE.START, msg: 'initial state is START' },
+        { data: 'width',  expected: 80,               msg: 'width = canvasWidth / blockSize' },
+        { data: 'height', expected: 60,               msg: 'height = canvasHeight / blockSize' },
+      ], (prop, expected) => makeGame()[prop] === expected);
+
+      // ── addScore ───────────────────────────────────────────────
+
+      test([
+        { data: 1,  expected: 1,  msg: 'addScore(1) → score 1' },
+        { data: 5,  expected: 5,  msg: 'addScore(5) → score 5' },
+        { data: 10, expected: 10, msg: 'addScore(10) → score 10' },
+      ], (pts, expected) => {
+        const g = makeGame();
+        g.addScore(pts);
+        return g.score === expected;
+      });
+
+      // simulate real gameplay: addScore(1) called n times
+      const addScoreN = (g, n) => { for (let i = 0; i < n; i++) g.addScore(1); };
+
+      test([
+        { data: 9,  expected: 2,   msg: 'speed unchanged before speedUpEvery' },
+        { data: 10, expected: 2.4, msg: 'speed +0.4 after first speedUpEvery' },
+        { data: 20, expected: 2.8, msg: 'speed +0.4 again at 2× speedUpEvery' },
+      ], (n, expected) => {
+        const g = makeGame();
+        addScoreN(g, n);
+        return Math.abs(g.speed - expected) < 0.001;
+      });
+
+      test([
+        { data: 1000, expected: 6, msg: 'speed never exceeds maxSpeed' },
+      ], (n, expected) => {
+        const g = makeGame();
+        addScoreN(g, n);
+        return g.speed === expected;
+      });
+
+      // ── loseLife ───────────────────────────────────────────────
+
+      test([
+        { data: GAME_STATE.PLAYING, expected: 2, msg: 'loseLife while PLAYING decrements lives' },
+        { data: GAME_STATE.START,   expected: 3, msg: 'loseLife while START is ignored' },
+        { data: GAME_STATE.PAUSED,  expected: 3, msg: 'loseLife while PAUSED is ignored' },
+      ], (state, expected) => {
+        const g = makeGame();
+        g.state = state;
+        g.loseLife();
+        return g.lives === expected;
+      });
+
+      test([
+        { data: 1, expected: GAME_STATE.OVER,    msg: 'last life lost → state OVER' },
+        { data: 2, expected: GAME_STATE.PLAYING, msg: 'life lost with lives remaining → stays PLAYING' },
+      ], (lives, expected) => {
+        const g = makeGame({ lives });
+        g.state = GAME_STATE.PLAYING;
+        g.loseLife();
+        return g.state === expected;
+      });
+
+      test([
+        { data: true,  expected: 3, msg: 'loseLife ignored when transitioning' },
+        { data: false, expected: 2, msg: 'loseLife counts when not transitioning' },
+      ], (transitioning, expected) => {
+        const g = makeGame();
+        g.state = GAME_STATE.PLAYING;
+        g.transitioning = transitioning;
+        g.loseLife();
+        return g.lives === expected;
+      });
+
+      // ── handleKey ─────────────────────────────────────────────
+
+      test([
+        { data: { state: GAME_STATE.START,   key: 'Enter'  }, expected: GAME_STATE.PLAYING, msg: 'Enter on START → PLAYING' },
+        { data: { state: GAME_STATE.START,   key: ' '      }, expected: GAME_STATE.PLAYING, msg: 'Space on START → PLAYING' },
+        { data: { state: GAME_STATE.PLAYING, key: 'p'      }, expected: GAME_STATE.PAUSED,  msg: 'p on PLAYING → PAUSED' },
+        { data: { state: GAME_STATE.PLAYING, key: 'P'      }, expected: GAME_STATE.PAUSED,  msg: 'P on PLAYING → PAUSED' },
+        { data: { state: GAME_STATE.PLAYING, key: 'Escape' }, expected: GAME_STATE.PAUSED,  msg: 'Escape on PLAYING → PAUSED' },
+        { data: { state: GAME_STATE.PAUSED,  key: 'p'      }, expected: GAME_STATE.PLAYING, msg: 'p on PAUSED → PLAYING (resume)' },
+      ], ({ state, key }, expected) => {
+        const g = makeGame();
+        g.state = state;
+        g.handleKey(key);
+        const result = g.state === expected;
+        clearInterval(g.intervalId);
+        return result;
+      });
+
+      // ── restart ───────────────────────────────────────────────
+
+      test([
+        { data: 'score', expected: 0, msg: 'restart resets score to 0' },
+        { data: 'lives', expected: 3, msg: 'restart resets lives to initial' },
+        { data: 'speed', expected: 2, msg: 'restart resets speed to initialSpeed' },
+        { data: 'tick',  expected: 0, msg: 'restart resets tick to 0' },
+      ], (prop, expected) => {
+        const g = makeGame();
+        g.state = GAME_STATE.PLAYING;
+        g.score = 99; g.lives = 1; g.speed = 5; g.tick = 100;
+        g.restart();
+        const result = g[prop] === expected;
+        clearInterval(g.intervalId);
+        return result;
+      });
+    </script>
+  </body>
+</html>

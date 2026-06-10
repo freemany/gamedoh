@@ -1,0 +1,26 @@
+{
+  // ---- Editor Basics ----
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.formatOnSave": false,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // ---- Prettier Integration ----
+  "prettier.requireConfig": true,
+  "prettier.useEditorConfig": false,
+
+  // ---- JavaScript Settings ----
+  "javascript.format.enable": false,
+  "javascript.validate.enable": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+
+  // ---- Files ----
+  "files.eol": "\n",
+  "files.autoSave": "off",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  // ---- Terminal ----
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "liveServer.settings.port": 5502
+}

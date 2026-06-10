@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contra</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #loading {
+      color: #aaa;
+      font-family: monospace;
+      font-size: 16px;
+    }
+    canvas {
+      display: none;
+      image-rendering: pixelated;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">Loading…</div>
+  <canvas id="gameCanvas"></canvas>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>

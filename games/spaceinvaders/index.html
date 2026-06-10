@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 100vw;
+      height: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: top;
+      overflow: hidden;
+    }
+
+    .wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    img {
+      display: none;
+    }
+
+    #loading {
+      position: absolute;
+      top: 10%;
+      width: 100%;
+      text-align: center;
+      font-size: 60px;
+      z-index: 1;
+    }
+  </style>
+  <div class="wrapper">
+    <div id="loading">Loading...</div>
+    <canvas id="canvas" width="650" height="450"></canvas>
+  </div>
+  <audio id="shootSound" src="https://jskidz.au/audio/laser-shot.wav" preload="auto"></audio>
+  <audio id="shootExplosion" src="https://jskidz.au/audio/explosion.wav" preload="auto"></audio>
+  <script src="main.js" type="module"></script>
+</html>
