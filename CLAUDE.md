@@ -47,6 +47,8 @@ Games use a pixel-art sprite system based on 2D character arrays:
 
 Sprites are defined as 2D arrays of single-character color codes (see `pacmanImage.js`, `ghost.js`).
 
+**Pixel art is a signature gamedoh feature — always use it for characters.** Players, enemies, and other creature/vehicle entities must be drawn via `drawShape()` from a 2D pixel-art array, never freehand canvas primitives (`ctx.arc`, `ctx.bezierCurveTo`, gradients, etc.). Freehand shapes are fine for backgrounds, UI/HUD, and simple projectiles (bullets, particles). See `games/starter-kit/CLAUDE.md` → "Sprites / Pixel Art" for the full convention.
+
 ### Game Entity Pattern
 
 Entities (Pacman, Ghost, Fruit, Block) follow this pattern:

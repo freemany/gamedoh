@@ -165,6 +165,8 @@ export class WalkingState extends State {
 
 ## Sprites / Pixel Art (`[entity]/images.js`)
 
+**Pixel art is required for characters.** Every player, enemy, creature, vehicle, or other game entity must be drawn as a `drawShape()` pixel sprite built from a 2D character array — never freehand canvas primitives (`ctx.arc`, `ctx.bezierCurveTo`, `ctx.quadraticCurveTo`, gradients, etc.) to draw a character. Pixel art is gamedoh's signature look; games that draw entities with smooth vector shapes break that identity. Reserve raw canvas primitives for backgrounds, UI/HUD elements, and simple projectiles (bullets, particles) where a sprite would be overkill.
+
 Sprites are 2D arrays of single-character color codes:
 
 ```js
